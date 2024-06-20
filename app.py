@@ -1,14 +1,22 @@
 import streamlit as st
+import numpy as np
+import matplotlib
+matplotlib.use('Agg')  # Use the 'Agg' backend explicitly
 import matplotlib.pyplot as plt
 
-# Explicitly set matplotlib backend
-plt.switch_backend('Agg')
+def main():
+    st.title('Streamlit with Matplotlib Example')
+    
+    # Generate some data
+    x = np.linspace(0, 10, 100)
+    y = np.sin(x)
+    
+    # Plot the data
+    fig, ax = plt.subplots()
+    ax.plot(x, y)
+    
+    # Display the plot in Streamlit
+    st.pyplot(fig)
 
-# Your Streamlit app code
-st.title('Hexagon Note')
-
-# Example: Plot a simple graph
-x = [1, 2, 3, 4, 5]
-y = [10, 20, 30, 40, 50]
-plt.plot(x, y)
-st.pyplot()
+if __name__ == '__main__':
+    main()
