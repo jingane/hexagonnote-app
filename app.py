@@ -1,9 +1,10 @@
+import tkinter as tk
+from tkinter import simpledialog
 import streamlit as st
 import plotly.graph_objects as go
-
 class HexagonNote:
-    def __init__(self, fig, x, y, size, text=""):
-        self.fig = fig
+    def __init__(self, master, x, y, size, text=""):
+        self.master = master
         self.size = size
         self.text = text
         self.center_x = x
@@ -13,28 +14,35 @@ class HexagonNote:
     def create_hexagon(self):
         size = self.size
         points = [
-            (self.center_x, self.center_y - size),
-            (self.center_x + size * 0.866, self.center_y - size * 0.5),
-            (self.center_x + size * 0.866, self.center_y + size * 0.5),
-            (self.center_x, self.center_y + size),
-            (self.center_x - size * 0.866, self.center_y + size * 0.5),
-            (self.center_x - size * 0.866, self.center_y - size * 0.5),
+            self.center_x, self.center_y - size,
+            self.center_x + size * 0.866, self.center_y - size * 0.5,
+            self.center_x + size * 0.866, self.center_y + size * 0.5,
+            self.center_x, self.center_y + size,
+            self.center_x - size * 0.866, self.center_y + size * 0.5,
+            self.center_x - size * 0.866, self.center_y - size * 0.5
         ]
-        hexagon_x, hexagon_y = zip(*points)
-        hexagon_x += (hexagon_x[0],)
-        hexagon_y += (hexagon_y[0],)
-        self.fig.add_trace(go.Scatter(x=hexagon_x, y=hexagon_y, fill="toself", line=dict(color='black'), text=self.text, hoverinfo="text"))
+        self.polygon = self.master.create_polygon(points, outline="black", fill="lightblue", width=2)
+        self.text_id = self.master.create_text(self.center_x, self.center_y, text=self.text)
+        self.master.tag_bind(self.polygon, "<Button-1>", self.on_click)
+        self.master.tag_bind(self.text_id, "<Button-1>", self.on_click)
 
-    def update_text(self, text):
-        self.text = text
+    def on_click(self, event):
+        text = simpledialog.askstring("Input", "Enter note:")
+        if text is not None:
+            self.text = text
+            self.master.itemconfig(self.text_id, text=self.text)
+
 
 class HexaNoteApp:
-    def __init__(self):
-        self.fig = go.Figure()
-        self.hexagons = []
+    def __init__(self, root):
+        self.root = root
+        self.root.title("Hexa Note")
+        self.canvas = tk.Canvas(root, bg="white")
+        self.canvas.pack(fill=tk.BOTH, expand=True)
+        self.add_hexagon_notes()
 
     def add_hexagon_notes(self):
-        size = 1
+        size = 50
         spacing_x = size * 2  # Adjusted spacing for x to avoid overlap
         spacing_y = size * 1.732  # sqrt(3) * size
         for i in range(10):  # Increase range for more hexagons
@@ -43,20 +51,9 @@ class HexaNoteApp:
                 y = spacing_y * j
                 if j % 2 == 1:  # Offset every other row
                     x += spacing_x / 2
-                hex_note = HexagonNote(self.fig, x, y, size)
-                self.hexagons.append(hex_note)
-
-    def display(self):
-        st.plotly_chart(self.fig, use_container_width=True)
-
-        for hex_note in self.hexagons:
-            new_text = st.text_input(f'Note for hexagon at ({hex_note.center_x}, {hex_note.center_y})', hex_note.text)
-            if new_text != hex_note.text:
-                hex_note.update_text(new_text)
-                self.fig.update_traces(hoverinfo="text")
+                HexagonNote(self.canvas, x, y, size)
 
 if __name__ == "__main__":
-    st.title("Hexa Note")
-    app = HexaNoteApp()
-    app.add_hexagon_notes()
-    app.display()
+    root = tk.Tk()
+    app = HexaNoteApp(root)
+    root.mainloop()
