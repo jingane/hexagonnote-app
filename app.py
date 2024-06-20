@@ -1,5 +1,7 @@
 import streamlit as st
 import numpy as np
+import matplotlib
+matplotlib.use('Agg')  # Use the 'Agg' backend explicitly
 import matplotlib.pyplot as plt
 from matplotlib.patches import Polygon
 
