@@ -1,33 +1,14 @@
 import streamlit as st
-import numpy as np
-import matplotlib
-matplotlib.use('Agg')  # Use the 'Agg' backend explicitly
 import matplotlib.pyplot as plt
-from matplotlib.patches import Polygon
 
-def draw_hexagon(size=1):
-    fig, ax = plt.subplots()
-    points = [
-        (0, 1), (np.sqrt(3)/2, 0.5), (np.sqrt(3)/2, -0.5),
-        (0, -1), (-np.sqrt(3)/2, -0.5), (-np.sqrt(3)/2, 0.5)
-    ]
-    polygon = Polygon(points, closed=True, edgecolor='black', linewidth=2, facecolor='lightblue')
-    ax.add_patch(polygon)
-    ax.set_aspect('equal', 'box')
-    ax.set_xlim(-size, size)
-    ax.set_ylim(-size, size)
-    ax.axis('off')  # Disable axis
-    return fig
+# Explicitly set matplotlib backend
+plt.switch_backend('Agg')
 
-def main():
-    st.title('Hexa Memo')
-    st.write('Click the button to draw a hexagon!')
+# Your Streamlit app code
+st.title('Hexagon Note')
 
-    size = st.slider('Size of the hexagon', 1, 10, 5)
-
-    if st.button('Draw Hexagon'):
-        fig = draw_hexagon(size)
-        st.pyplot(fig)
-
-if __name__ == '__main__':
-    main()
+# Example: Plot a simple graph
+x = [1, 2, 3, 4, 5]
+y = [10, 20, 30, 40, 50]
+plt.plot(x, y)
+st.pyplot()
