@@ -1,5 +1,6 @@
 import streamlit as st
 import plotly.graph_objects as go
+import numpy as np
 
 class HexagonNote:
     def __init__(self, fig, x, y, size, text=""):
@@ -12,22 +13,22 @@ class HexagonNote:
 
     def create_hexagon(self):
         size = self.size
-        points = [
-            (self.center_x, self.center_y - size),
-            (self.center_x + size * 0.866, self.center_y - size * 0.5),
-            (self.center_x + size * 0.866, self.center_y + size * 0.5),
-            (self.center_x, self.center_y + size),
-            (self.center_x - size * 0.866, self.center_y + size * 0.5),
-            (self.center_x - size * 0.866, self.center_y - size * 0.5),
-        ]
-        hexagon_x, hexagon_y = zip(*points)
-        hexagon_x += (hexagon_x[0],)
-        hexagon_y += (hexagon_y[0],)
-        self.fig.add_trace(go.Scatter(x=hexagon_x, y=hexagon_y, fill="toself", line=dict(color='black'), text=self.text, hoverinfo="text"))
+        angles = np.linspace(0, 2 * np.pi, 7)
+        hexagon_x = self.center_x + size * np.cos(angles)
+        hexagon_y = self.center_y + size * np.sin(angles)
+
+        self.fig.add_trace(go.Scatter(
+            x=hexagon_x,
+            y=hexagon_y,
+            mode='lines',
+            fill='toself',
+            line=dict(color='black'),
+            text=self.text,
+            hoverinfo='text'
+        ))
 
     def update_text(self, text):
         self.text = text
-        # Update the hover text for the hexagon
         self.fig.update_traces(selector=dict(text=self.text), hoverinfo="text")
 
 class HexaNoteApp:
@@ -37,9 +38,9 @@ class HexaNoteApp:
         self.add_hexagon_notes()
 
     def add_hexagon_notes(self):
-        size = 1
-        spacing_x = size * 1.732  # sqrt(3) * size
-        spacing_y = size * 1.5  # 3/2 * size
+        size = 50
+        spacing_x = size * 1.5  # Adjusted spacing for x to avoid overlap
+        spacing_y = size * 1.732  # sqrt(3) * size
         for i in range(10):  # Increase range for more hexagons
             for j in range(10):
                 x = spacing_x * i
