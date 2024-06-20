@@ -27,6 +27,8 @@ class HexagonNote:
 
     def update_text(self, text):
         self.text = text
+        # Update the hover text for the hexagon
+        self.fig.update_traces(selector=dict(text=self.text), hoverinfo="text")
 
 class HexaNoteApp:
     def __init__(self):
@@ -36,8 +38,8 @@ class HexaNoteApp:
 
     def add_hexagon_notes(self):
         size = 1
-        spacing_x = size * 2  # Adjusted spacing for x to avoid overlap
-        spacing_y = size * 1.732  # sqrt(3) * size
+        spacing_x = size * 1.732  # sqrt(3) * size
+        spacing_y = size * 1.5  # 3/2 * size
         for i in range(10):  # Increase range for more hexagons
             for j in range(10):
                 x = spacing_x * i
@@ -54,7 +56,6 @@ class HexaNoteApp:
             new_text = st.text_input(f'Note for hexagon at ({hex_note.center_x}, {hex_note.center_y})', hex_note.text)
             if new_text != hex_note.text:
                 hex_note.update_text(new_text)
-                self.fig.update_traces(selector=dict(text=hex_note.text), hoverinfo="text")
 
 if __name__ == "__main__":
     st.title("Hexa Note")
